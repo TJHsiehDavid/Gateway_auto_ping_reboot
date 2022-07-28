@@ -29,7 +29,7 @@ def ssh_make_connect(ip):
             serial_cmd = "sudo reboot"
             stdin, stdout, stderr = client.exec_command(serial_cmd, get_pty=True)
             stdin.write(gl.ip_address_info_dict['password'] + '\n')
-            print(ip + ' reboot...')
+
 
         time.sleep(1)
         client.close()
