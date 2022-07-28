@@ -16,6 +16,7 @@ ip_addr_list = []
 time_gap = 0
 reboot = 0
 
+
 def read_config_ini():
     global try_connected_count
     global check_device_status

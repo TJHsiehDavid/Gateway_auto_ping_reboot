@@ -7,6 +7,7 @@ import globavar as gl
 gl.read_config_ini()
 TIME_GAP = gl.time_gap      #1 min unit.
 
+
 if __name__ == '__main__':
     print("Start ping all IP！")
 

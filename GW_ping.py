@@ -27,6 +27,7 @@ def check_gateway_alive(ip, try_count):
 
     gl.write_ip_config_txt(ip, response, gl.ip_location_dict)
 
+
 # http://localhost:8088/v2/device/uniAddress/52?realtime=onOff
 def check_device_realtime_near_gateway(ip, uniaddress):
     print("Get device realtime function. Device address: " + uniaddress + ", near GW ip: " + ip)

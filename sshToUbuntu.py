@@ -30,7 +30,6 @@ def ssh_make_connect(ip):
             stdin.write(gl.ip_address_info_dict['password'] + '\n')
             print(ip + ' reboot...')
 
-
         client.close()
         return data
 
