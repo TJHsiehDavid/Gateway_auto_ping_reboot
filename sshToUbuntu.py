@@ -5,6 +5,7 @@ Python遠端登入Linux伺服器並執行相關命令
 
 import paramiko
 import globavar as gl
+import time
 
 
 def ssh_make_connect(ip):
@@ -30,7 +31,10 @@ def ssh_make_connect(ip):
             stdin.write(gl.ip_address_info_dict['password'] + '\n')
             print(ip + ' reboot...')
 
+        time.sleep(1)
         client.close()
+        print(ip + ' reboot...')
+
         return data
 
     except Exception as e:

@@ -103,7 +103,8 @@ def write_ip_config_txt(ip, resp, location):
                     'Gateway network connection---------OK\n' +
                     'Gateway current time---------------' + timestamp + '\n' +
                     'Gateway program execution----------OK\n' +
-                    'Gateway and Dongle C connection----' + msg + '\n')
+                    'Gateway and Dongle C connection----' + msg + '\n' +
+                    'Gateway reboot---------------------' + ('Yes\n' if reboot else 'False\n'))
                     #'Gateway and Dongle C connection----' + ('Ok (' + str(serial_is_alive_dict[ip]) + ')\n' if bSerial else 'Fail\n'))
         elif resp == 2:
             info = ('[' + ip + ' --- ' + location[ip] + ']\n' +
@@ -117,7 +118,7 @@ def write_ip_config_txt(ip, resp, location):
                     'Gateway current time---------------' + timestamp + '\n' +
                     'Gateway program execution----------OK\n' +
                     'Gateway and Dongle C connection----Fail because have no this address\n')
-        info += 'Gateway reboot---------------------' + 'Yes' if reboot == 1 else 'False'
+
         f.write(info)
         f.write(" \n")
         f.close()

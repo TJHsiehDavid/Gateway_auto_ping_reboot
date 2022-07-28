@@ -6,6 +6,10 @@ sudo pip install paramiko
 python3.8 -m pip install paramiko 
 python3.8 -m pip install requests
 
+tar.gz
+壓縮：tar zcvf FileName.tar.gz DirName
+解壓：tar -xvvzf xxxx.tar.gz
+
 [illustrate]
 When install paramiko, Python pip raising 'NewConnectionError' while installing libraries 
 The only solution I used is to add "nameserver 8.8.8.8"
