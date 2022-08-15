@@ -4,6 +4,7 @@ import GW_ping as gw
 import globavar as gl
 
 
+gl.read_ip_ini()
 gl.read_config_ini()
 TIME_GAP = gl.time_gap      #1 min unit.
 
@@ -22,13 +23,17 @@ if __name__ == '__main__':
         while True:
             sleep_time = 1
             for ip in gl.ip_addr_list:
-                gw.check_gateway_alive(ip, gl.get_connected_count())
+                if gl.config_dict['ping_onoff']:
+                    gw.check_gateway_alive(ip, gl.get_connected_count())
 
-                if gl.get_device_status():
+                if gl.config_dict['checked_device_onoff']:
                     gw.check_device_realtime_near_gateway(ip, gl.get_device_addr(ip))
 
 
+
                 time.sleep(sleep_time)
+
+            print("Finished a loop and rest for ", TIME_GAP*60, "secs... then will restart again.")
 
             time.sleep(TIME_GAP*60)
     except KeyboardInterrupt:

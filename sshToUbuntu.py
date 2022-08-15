@@ -6,6 +6,7 @@ Python遠端登入Linux伺服器並執行相關命令
 import paramiko
 import globavar as gl
 import time
+from scp import SCPClient
 
 
 def ssh_make_connect(ip):
@@ -19,21 +20,36 @@ def ssh_make_connect(ip):
         client.connect(ip, username=gl.ip_address_info_dict['username'], password=gl.ip_address_info_dict['password'], timeout=20)
         print('ssh is connected.')
 
-        serial_cmd = "ls /dev/ttyUSB*"
-        stdin, stdout, stderr = client.exec_command(serial_cmd)
-        data = stdout.readlines()
-        print(data)
+        ''' 決定是否要檢查usb通訊正常與否'''
+        if gl.config_dict['ping_onoff']:
+            serial_cmd = "ls /dev/ttyUSB*"
+            stdin, stdout, stderr = client.exec_command(serial_cmd)
+            data = stdout.readlines()
+            print(data)
+
+        ''' 決定是否要用檔案傳輸用的SCP '''
+        if gl.config_dict['scp_onoff']:
+            with SCPClient(client.get_transport()) as scp:
+                # scp.put('local full path', 'remote full path')
+                scp.put('/home/davidhsieh/Pictures/device.ini', recursive=True, remote_path='/home/ubuntu/sdk1/')
+                scp.put('/home/davidhsieh/Pictures/config.ini', recursive=True, remote_path='/home/ubuntu/sdk1/')
+                scp.put('/home/davidhsieh/Pictures/interactive.py', recursive=True, remote_path='/home/ubuntu/sdk1/pyaci/')
+                scp.put('/home/davidhsieh/Pictures/deviceService.py', recursive=True, remote_path='/home/ubuntu/sdk1/service/')
+                scp.put('/home/davidhsieh/Pictures/globalvar.py', recursive=True, remote_path='/home/ubuntu/sdk1/')
+                print("scp ", ip, ' done!')
+                scp.close()
+
 
         ''' 決定是否要重新啟動GW '''
-        if gl.reboot:
+        if gl.config_dict['reboot_onoff']:
             serial_cmd = "sudo reboot"
             stdin, stdout, stderr = client.exec_command(serial_cmd, get_pty=True)
             stdin.write(gl.ip_address_info_dict['password'] + '\n')
 
+            time.sleep(1)
+            client.close()
+            print(ip + ' reboot...')
 
-        time.sleep(1)
-        client.close()
-        print(ip + ' reboot...')
 
         return data
 

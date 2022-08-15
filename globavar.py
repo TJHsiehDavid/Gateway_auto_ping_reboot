@@ -13,13 +13,14 @@ ip_address_info_dict = {}
 
 ip_addr_list = []
 
+config_dict = {}
+
 time_gap = 0
 reboot = 0
 
 
-def read_config_ini():
+def read_ip_ini():
     global try_connected_count
-    global check_device_status
     global reboot
     global time_gap
 
@@ -38,21 +39,18 @@ def read_config_ini():
     print('ip password: ' + str(ip_address_info_dict['password']))
     ip_address_info_dict['username'] = ip_config['ip_address_info']['username']
     print('ip username: ' + str(ip_address_info_dict['username']))
-    check_device_status = int(ip_config['check_device_flag']['checked'])
-    print('check device status: ' + 'yes' if check_device_status else 'no')
+
 
     try_connected_count = ip_config['try_connected_counts']['times']
     print('connection retry time ' + try_connected_count)
 
-    reboot = int(ip_config['gateway']['reboot'])
-    print('gateway reboot ' + 'yes' if check_device_status else 'no')
     time_gap = int(ip_config['gateway']['timegap'])
     print('gateway timegap ' + str(time_gap))
 
     # device nearest GW
     ip_list = ip_config.items("ip_device_dictionary")
     for key, val in ip_list:
-        print("read_config_ini ip-list key:" + str(key) + " val:" + str(val))
+        print("read_ip_ini ip-list key:" + str(key) + " val:" + str(val))
         ip_device_dict[str(key)] = str(val)
 
     for i in range(0, ip_length, 1):
@@ -63,7 +61,7 @@ def read_config_ini():
     # location info
     ip_location_list = ip_config.items("ip_location_dictionary")
     for key, val in ip_location_list:
-        print("read_config_ini ip-location key:" + str(key) + " val:" + str(val))
+        print("read_ip_ini ip-location key:" + str(key) + " val:" + str(val))
         ip_location_dict[str(key)] = str(val)
 
 
@@ -73,6 +71,32 @@ def read_config_ini():
     print(ip_to_uniaddr)
     print(ip_addr)
     '''
+
+def read_config_ini():
+    sdk_dir = os.path.dirname(os.path.abspath(__file__))
+
+    config = ConfigParser()
+    config.read(sdk_dir + '/config.ini')
+
+    # Read ini index info
+    IP_PING_ONOFF = int(config['PING']['ping_onoff'])
+    print('IP PING ONOFF: ', 'yes' if IP_PING_ONOFF else 'no')
+
+    REBOOT_ONOFF = int(config['REBOOT']['reboot_onoff'])
+    print('REBOOT ONOFF: ', 'yes' if REBOOT_ONOFF else 'no')
+
+    SCP_ONOFF = int(config['SCP']['scp_onoff'])
+    print('SCP ONOFF: ', 'yes' if SCP_ONOFF else 'no')
+
+    CHECK_DEVICE_ONOFF = int(config['CHECK_DEVICE_ONOFF']['checked_device_onoff'])
+    print('CHECK DEVICE ONOFF: ', 'yes' if CHECK_DEVICE_ONOFF else 'no')
+
+    for section in config.sections():
+        #dictionary[section] = {}
+        for option in config.options(section):
+            config_dict[option] = int(config.get(section, option))
+
+
 
 def write_config_ini():
     sdk_dir = os.path.dirname(os.path.abspath(__file__))
@@ -183,16 +207,13 @@ def serial_port_is_alive(ip):
         return 1
 
 
+
 def get_device_addr(ip):
     return ip_device_dict[ip]
 
 def get_connected_count():
     ''' ini決定是否要 connection count '''
     return try_connected_count
-
-def get_device_status():
-    ''' ini決定是否要get鄰近裝置onoff狀態 '''
-    return check_device_status
 
 def is_json_format(message):
     if isinstance(message, str):  # 首先判斷變數是否為字串

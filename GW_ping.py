@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import subprocess
+from subprocess import call
 import requests
 import globavar as gl
 
@@ -28,6 +29,8 @@ def check_gateway_alive(ip, try_count):
     gl.write_ip_config_txt(ip, response, gl.ip_location_dict)
 
 
+
+
 # http://localhost:8088/v2/device/uniAddress/52?realtime=onOff
 def check_device_realtime_near_gateway(ip, uniaddress):
     print("Get device realtime function. Device address: " + uniaddress + ", near GW ip: " + ip)
@@ -50,3 +53,4 @@ def check_device_realtime_near_gateway(ip, uniaddress):
         # Connection is fail, so the msg of exception still write into ini.
         gl.write_device_response_config_txt(ip, uniaddress, e, gl.ip_location_dict)
         print(e)
+
