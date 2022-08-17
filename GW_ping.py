@@ -2,7 +2,6 @@
 # -*- coding: UTF-8 -*-
 
 import subprocess
-from subprocess import call
 import requests
 import globavar as gl
 

@@ -20,14 +20,21 @@ def ssh_make_connect(ip):
         client.connect(ip, username=gl.ip_address_info_dict['username'], password=gl.ip_address_info_dict['password'], timeout=20)
         print('ssh is connected.')
 
-        ''' 決定是否要檢查usb通訊正常與否'''
+        ''' 決定是否要檢查usb通訊正常與否
+            (在ubuntu內的各種local cmd都透過此方法傳送) '''
         if gl.config_dict['ping_onoff']:
             serial_cmd = "ls /dev/ttyUSB*"
             stdin, stdout, stderr = client.exec_command(serial_cmd)
             data = stdout.readlines()
+
+            # move file from local to other local destination in ubuntu.
+            #serial_cmd = "mv ./sdk1/aci_evt.py ./sdk1/pyaci/aci/"
+            #stdin, stdout, stderr = client.exec_command(serial_cmd)
             print(data)
 
-        ''' 決定是否要用檔案傳輸用的SCP '''
+
+        ''' 決定是否要用檔案傳輸用的SCP 
+            (從local端傳送檔案至remote端) '''
         if gl.config_dict['scp_onoff']:
             with SCPClient(client.get_transport()) as scp:
                 # scp.put('local full path', 'remote full path')
