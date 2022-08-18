@@ -20,6 +20,7 @@ def ssh_make_connect(ip):
         client.connect(ip, username=gl.ip_address_info_dict['username'], password=gl.ip_address_info_dict['password'], timeout=20)
         print('ssh is connected.')
 
+
         ''' 決定是否要檢查usb通訊正常與否
             (在ubuntu內的各種local cmd都透過此方法傳送) '''
         if gl.config_dict['ping_onoff']:
