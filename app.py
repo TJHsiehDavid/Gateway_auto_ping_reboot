@@ -1,3 +1,6 @@
+import sys
+# Command below is to Disable pyc file generate.
+sys.dont_write_bytecode = True
 import os as os
 import time
 import GW_ping as gw
