@@ -6,6 +6,7 @@ import json
 import sshToUbuntu as ssh
 
 
+
 ip_device_dict = {}
 ip_location_dict = {}
 serial_is_alive_dict = {}
@@ -98,8 +99,13 @@ def read_config_ini():
 
 
 
-def write_config_ini():
+def write_reboot_time_txt(data):
     sdk_dir = os.path.dirname(os.path.abspath(__file__))
+    f = open(sdk_dir + "/reboot_time.txt", 'w')
+    info = 'time interval: ' + str(data) + ' >= time gap:' + str(time_gap* 60)
+    f.write(info)
+    f.close()
+    '''
     config = ConfigParser()
     config.read(sdk_dir + '/ip.ini')
     config.set("Time_to_reboot", "NOW", str(datetime.now()))
@@ -107,9 +113,10 @@ def write_config_ini():
     hd = open(sdk_dir + '/ip.ini', "w")
     config.write(hd)
     hd.close()
-
+    '''
 
 def write_ip_config_txt(ip, resp, location):
+    sdk_dir = os.path.dirname(os.path.abspath(__file__))
     now = datetime.now()
     timestamp = now.strftime('%Y/%m/%d %H:%M:%S')
 
@@ -121,31 +128,33 @@ def write_ip_config_txt(ip, resp, location):
     else:
         msg = ('Fail (' + 'Cannot ssh to this ip. Checked the domain.)')
 
-    with open('GW_ip_response.txt', 'a') as f:
-        if resp == 0:
-            info = ('[' + ip + ' --- ' + location[ip] + ']\n' +
+
+    f = open(sdk_dir + "/GW_ip_response.txt", 'a')
+    if resp == 0:
+        info = ('[' + ip + ' --- ' + location[ip] + ']\n' +
                     'Gateway network connection---------OK\n' +
                     'Gateway current time---------------' + timestamp + '\n' +
                     'Gateway program execution----------OK\n' +
                     'Gateway and Dongle C connection----' + msg + '\n' +
                     'Gateway reboot---------------------' + ('Yes\n' if reboot else 'False\n'))
                     #'Gateway and Dongle C connection----' + ('Ok (' + str(serial_is_alive_dict[ip]) + ')\n' if bSerial else 'Fail\n'))
-        elif resp == 2:
-            info = ('[' + ip + ' --- ' + location[ip] + ']\n' +
+    elif resp == 2:
+        info = ('[' + ip + ' --- ' + location[ip] + ']\n' +
                     'Gateway network connection---------No response\n' +
                     'Gateway current time---------------' + timestamp + '\n' +
                     'Gateway program execution----------OK\n' +
                     'Gateway and Dongle C connection----Fail because network no response\n')
-        else:
-            info = ('[' + ip + ' --- ' + location[ip] + ']\n' +
+
+    else:
+        info = ('[' + ip + ' --- ' + location[ip] + ']\n' +
                     'Gateway network connection---------Have no this address\n' +
                     'Gateway current time---------------' + timestamp + '\n' +
                     'Gateway program execution----------OK\n' +
                     'Gateway and Dongle C connection----Fail because have no this address\n')
 
-        f.write(info)
-        f.write(" \n")
-        f.close()
+    f.write(info)
+    f.write(" \n")
+    f.close()
 
 def write_device_response_config_txt(ip, uniaddress, response_text, location):
     now = datetime.now()
