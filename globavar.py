@@ -17,12 +17,10 @@ ip_addr_list = []
 config_dict = {}
 
 time_gap = 0
-reboot = 0
 
 
 def read_ip_ini():
     global try_connected_count
-    global reboot
     global time_gap
 
     sdk_dir = os.path.dirname(os.path.abspath(__file__))
@@ -102,7 +100,7 @@ def read_config_ini():
 def write_reboot_time_txt(data):
     sdk_dir = os.path.dirname(os.path.abspath(__file__))
     f = open(sdk_dir + "/reboot_time.txt", 'w')
-    info = 'time interval: ' + str(data) + ' >= time gap:' + str(time_gap* 60)
+    info = 'time interval: ' + str(data) + ' >= time gap:' + str(time_gap* 60) + '\n'
     f.write(info)
     f.close()
     '''
@@ -136,7 +134,7 @@ def write_ip_config_txt(ip, resp, location):
                     'Gateway current time---------------' + timestamp + '\n' +
                     'Gateway program execution----------OK\n' +
                     'Gateway and Dongle C connection----' + msg + '\n' +
-                    'Gateway reboot---------------------' + ('Yes\n' if reboot else 'False\n'))
+                    'Gateway reboot---------------------' + ('Yes\n' if config_dict['reboot_onoff'] else 'False\n'))
                     #'Gateway and Dongle C connection----' + ('Ok (' + str(serial_is_alive_dict[ip]) + ')\n' if bSerial else 'Fail\n'))
     elif resp == 2:
         info = ('[' + ip + ' --- ' + location[ip] + ']\n' +
