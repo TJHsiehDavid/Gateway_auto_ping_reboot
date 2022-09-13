@@ -28,6 +28,7 @@ if __name__ == '__main__':
     try:
         while True:
             sleep_time = 0.3
+            device_count = 0
             time_normal = time.time()
             time_interval = round(time_normal - time_work, 2)
 
@@ -39,6 +40,10 @@ if __name__ == '__main__':
 
                     if gl.config_dict['checked_device_onoff']:
                         gw.check_device_realtime_near_gateway(ip, gl.get_device_addr(ip))
+
+                    device_count += 1
+                    if device_count % 10 == 0:
+                        time.sleep(0)
 
                     time.sleep(sleep_time)
                     time_work = time_normal = time.time()
