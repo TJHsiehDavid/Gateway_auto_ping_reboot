@@ -34,17 +34,20 @@ def ssh_make_connect(ip):
             print(data_usb)
 
 
+
+        if gl.config_dict['check_onoff']:
             # kill all app.py process in ubuntu.
             serial_cmd = "ps ax | grep " + "app.py" + " | grep -v grep"
             stdin, stdout, stderr = client.exec_command(serial_cmd)
             data = stdout.readlines()
             for i in range(0, len(data)):
-                lol_string = ''.join(map(str, data[i]))
-                fields = lol_string.split()
-                pid = fields[0]         # extracting Process ID from the output
-                serial_cmd = "kill -9 " + str(pid)       # terminating process
-                stdin, stdout, stderr = client.exec_command(serial_cmd)
-                print("Process Successfully terminated")
+                if gl.config_dict['kill_onoff']:
+                    lol_string = ''.join(map(str, data[i]))
+                    fields = lol_string.split()
+                    pid = fields[0]         # extracting Process ID from the output
+                    serial_cmd = "kill -9 " + str(pid)       # terminating process
+                    stdin, stdout, stderr = client.exec_command(serial_cmd)
+                    print("Process Successfully terminated")
                 print("Process: ", data)
 
 
@@ -95,7 +98,7 @@ def ssh_make_connect(ip):
 
         time.sleep(0.5)
         ''' restart process by sending cmd. '''
-        if gl.config_dict['ping_onoff']:
+        if gl.config_dict['restart_onoff']:
             for i in range(0, process_count):
                 serial_cmd = "./bin/start_sdk" + str(i+1) + ".sh"
                 stdin, stdout, stderr = client.exec_command(serial_cmd)

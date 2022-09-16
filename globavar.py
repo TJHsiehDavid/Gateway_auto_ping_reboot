@@ -90,6 +90,13 @@ def read_config_ini():
     CHECK_DEVICE_ONOFF = int(config['CHECK_DEVICE_ONOFF']['checked_device_onoff'])
     print('CHECK DEVICE ONOFF: ', 'yes' if CHECK_DEVICE_ONOFF else 'no')
 
+    CHECK_PROCESS = int(config['CHECK_PROCESS']['check_onoff'])
+    print('CHECK PROCESS ONOFF: ', 'yes' if CHECK_PROCESS else 'no')
+    KILL_PROCESS = int(config['KILL_PROCESS']['kill_onoff'])
+    print('KILL PROCESS ONOFF: ', 'yes' if KILL_PROCESS else 'no')
+    RESTART_PROCESS = int(config['RESTART_PROCESS']['restart_onoff'])
+    print('RESTART PROCESS ONOFF: ', 'yes' if RESTART_PROCESS else 'no')
+
     for section in config.sections():
         #dictionary[section] = {}
         for option in config.options(section):
