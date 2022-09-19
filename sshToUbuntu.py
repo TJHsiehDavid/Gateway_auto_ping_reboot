@@ -8,6 +8,51 @@ import time
 from scp import SCPClient
 
 
+def ssh_check_process(ip):
+    try:
+        # 建立一個ssh client物件
+        # 允許將信任的主機自動加入到host_allow 列表，此方法必須放在connect方法的前面
+        # 呼叫connect方法連線伺服器
+        # 執行命令
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(ip, username=gl.ip_address_info_dict['username'], password=gl.ip_address_info_dict['password'], timeout=20)
+        print('ssh is connected.')
+        process_count = 0
+
+        time.sleep(0.1)
+        ''' 決定是否要檢查usb通訊正常與否
+            (在ubuntu內的各種local cmd都透過此方法傳送) '''
+        if gl.config_dict['ping_onoff']:
+            serial_cmd = "ls /dev/ttyUSB*"
+            stdin, stdout, stderr = client.exec_command(serial_cmd)
+            data_usb = stdout.readlines()
+            if len(data_usb) >= 2:
+                process_count = 2
+            else:
+                process_count = 1
+
+        if gl.config_dict['check_onoff']:
+            # kill all app.py process in ubuntu.
+            for i in range(0, process_count):
+                serial_cmd = "ps ax | grep sdk" + str(i+1) + "/app.py" + " | grep -v grep"
+                stdin, stdout, stderr = client.exec_command(serial_cmd)
+                data = stdout.readlines()
+                print(data)
+                if len(data) == 0:
+                    ''' restart process by sending cmd. '''
+                    if gl.config_dict['restart_onoff']:
+                        serial_cmd = "./bin/start_sdk" + str(i + 1) + ".sh"
+                        stdin, stdout, stderr = client.exec_command(serial_cmd)
+                        print("restart process done!")
+
+
+        return data_usb
+
+    except Exception as e:
+        print(e)
+
+
 def ssh_make_connect(ip):
     try:
         # 建立一個ssh client物件
@@ -20,6 +65,7 @@ def ssh_make_connect(ip):
         print('ssh is connected.')
         process_count = 0
 
+        time.sleep(0.1)
         ''' 決定是否要檢查usb通訊正常與否
             (在ubuntu內的各種local cmd都透過此方法傳送) '''
         if gl.config_dict['ping_onoff']:
@@ -48,7 +94,7 @@ def ssh_make_connect(ip):
                     serial_cmd = "kill -9 " + str(pid)       # terminating process
                     stdin, stdout, stderr = client.exec_command(serial_cmd)
                     print("Process Successfully terminated")
-                print("Process: ", data)
+                print("Process: ", data[i])
 
 
             # move file from local to other local destination in ubuntu.
@@ -98,7 +144,7 @@ def ssh_make_connect(ip):
 
         time.sleep(0.5)
         ''' restart process by sending cmd. '''
-        if gl.config_dict['restart_onoff']:
+        if gl.config_dict['restart_onoff'] and gl.config_dict['kill_onoff']:
             for i in range(0, process_count):
                 serial_cmd = "./bin/start_sdk" + str(i+1) + ".sh"
                 stdin, stdout, stderr = client.exec_command(serial_cmd)

@@ -5,11 +5,19 @@ import os as os
 import time
 import GW_ping as gw
 import globavar as gl
+from threading import Timer
 
 
 gl.read_ip_ini()
 gl.read_config_ini()
 TIME_GAP = gl.time_gap*60    #1 min unit.
+
+
+def process_handler():
+    if gl.config_dict['check_onoff'] and gl.config_dict['restart_onoff']:
+        for ip in gl.ip_addr_list:
+            gl.serial_port_ssh_deal_process(ip)
+
 
 
 if __name__ == '__main__':
@@ -25,12 +33,18 @@ if __name__ == '__main__':
 
     time_work = time_write_txt = time.time()
 
+    #check process
+    if gl.config_dict['check_onoff'] and gl.config_dict['restart_onoff']:
+        t = Timer(600, process_handler)
+        t.start()
+
     try:
         while True:
             sleep_time = 0.3
             device_count = 0
             time_normal = time.time()
             time_interval = round(time_normal - time_work, 2)
+
 
             if time_interval >= TIME_GAP or first is True:
                 first = False
@@ -59,6 +73,8 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         print("\n[KeyInterrupt] Application exit!")
+
+
 
     '''
     with open('ip.ini', 'r') as f:      #ip.txt为本地文件记录所有需要检测连通性的ip

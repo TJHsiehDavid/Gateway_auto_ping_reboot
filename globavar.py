@@ -220,7 +220,17 @@ def serial_port_is_alive(ip):
         serial_is_alive_dict[ip] = data
         return 1
 
-
+def serial_port_check_process(ip):
+    data = ssh.ssh_check_process(ip)
+    if data == None:
+        print('Cannot ssh to this ip:' + ip)
+        return 2
+    elif len(data) == 0 or data[0] == '':
+        print('Serial port not detected in this ip:' + ip)
+        return 0
+    else:
+        serial_is_alive_dict[ip] = data
+        return 1
 
 def get_device_addr(ip):
     return ip_device_dict[ip]
