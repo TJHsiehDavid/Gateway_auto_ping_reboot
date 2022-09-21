@@ -5,19 +5,31 @@ import os as os
 import time
 import GW_ping as gw
 import globavar as gl
-from threading import Timer
+import threading
 
 
 gl.read_ip_ini()
 gl.read_config_ini()
 TIME_GAP = gl.time_gap*60    #1 min unit.
 
+lock = threading.Lock()
+CHECK = False
 
 def process_handler():
-    if gl.config_dict['check_onoff'] and gl.config_dict['restart_onoff']:
+    if gl.config_dict['check_onoff'] and gl.config_dict['restart_onoff'] and CHECK:
         for ip in gl.ip_addr_list:
-            gl.serial_port_ssh_deal_process(ip)
+            gl.serial_port_check_process(ip)
 
+
+
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func()
+
+    t = threading.Timer(sec, func_wrapper)
+    t.start()
+    return t
 
 
 if __name__ == '__main__':
@@ -35,8 +47,12 @@ if __name__ == '__main__':
 
     #check process
     if gl.config_dict['check_onoff'] and gl.config_dict['restart_onoff']:
-        t = Timer(600, process_handler)
-        t.start()
+        '''
+        per GW need 8 sec for safety go through all control.
+        Thus, each GW * 8 secs as time interval.
+        '''
+        set_interval(process_handler, gl.GW_length * 8)
+
 
     try:
         while True:
@@ -47,6 +63,8 @@ if __name__ == '__main__':
 
 
             if time_interval >= TIME_GAP or first is True:
+                lock.acquire()
+                CHECK = False
                 first = False
                 for ip in gl.ip_addr_list:
                     if gl.config_dict['ping_onoff']:
@@ -57,14 +75,15 @@ if __name__ == '__main__':
 
                     device_count += 1
                     if device_count % 10 == 0:
-                        time.sleep(0)
+                        time.sleep(240)
 
                     time.sleep(sleep_time)
                     time_work = time_normal = time.time()
 
 
                 print("Finished a loop and rest for ", TIME_GAP, "mins... then will restart again.")
-
+                CHECK = True
+                lock.release()
             # 10 mins will enter to refresh txt.
             if gl.config_dict['reboot_onoff'] and (time_normal - time_write_txt >= 600):
                 time_write_txt = time.time()
@@ -73,6 +92,8 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         print("\n[KeyInterrupt] Application exit!")
+
+
 
 
 

@@ -17,11 +17,12 @@ ip_addr_list = []
 config_dict = {}
 
 time_gap = 0
-
+GW_length = 0
 
 def read_ip_ini():
     global try_connected_count
     global time_gap
+    global GW_length
 
     sdk_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,7 +30,7 @@ def read_ip_ini():
     ip_config.read(sdk_dir + '/ip.ini')
 
     # Read ini index info
-    ip_length = int(ip_config['ip_length']['size'])
+    GW_length = ip_length = int(ip_config['ip_length']['size'])
     print('ip size: ' + str(ip_length))
 
     ip_address_info_dict['port'] = int(ip_config['ip_address_info']['port'])

@@ -17,7 +17,7 @@ def ssh_check_process(ip):
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(ip, username=gl.ip_address_info_dict['username'], password=gl.ip_address_info_dict['password'], timeout=20)
-        print('ssh is connected.')
+        print('[%s] check_process - ssh is connected.' %str(ip))
         process_count = 0
 
         time.sleep(0.1)
@@ -39,14 +39,14 @@ def ssh_check_process(ip):
                 stdin, stdout, stderr = client.exec_command(serial_cmd)
                 data = stdout.readlines()
                 print(data)
-                if len(data) == 0:
+                if not data:
                     ''' restart process by sending cmd. '''
                     if gl.config_dict['restart_onoff']:
                         serial_cmd = "./bin/start_sdk" + str(i + 1) + ".sh"
                         stdin, stdout, stderr = client.exec_command(serial_cmd)
                         print("restart process done!")
 
-
+        print("--------- check process finished ----------")
         return data_usb
 
     except Exception as e:
@@ -135,9 +135,10 @@ def ssh_make_connect(ip):
                     '''
                     #scp.put('/home/davidhsieh/Pictures/LTDMS.json', recursive=True, remote_path='/home/ubuntu/Setup_Encryption/build/Git_Delta_Gateway/pyaci/data/')
                     #scp.put('/home/davidhsieh/Pictures/deviceService.py', recursive=True, remote_path='/home/ubuntu/sdk'+ str(i+1) + '/service/')
-                    #scp.put('/home/davidhsieh/Pictures/interactive.py', recursive=True, remote_path='/home/ubuntu/sdk'+ str(i+1) + '/pyaci/')
-                    #scp.put('/home/davidhsieh/Pictures/globalvar.py', recursive=True, remote_path='/home/ubuntu/sdk' + str(i + 1))
-                    scp.put('/home/davidhsieh/Pictures/device.ini', recursive=True, remote_path='/home/ubuntu/sdk' + str(i + 1))
+                    scp.put('/home/davidhsieh/Pictures/interactive.py', recursive=True, remote_path='/home/ubuntu/sdk'+ str(i+1) + '/pyaci/')
+                    #scp.put('/home/davidhsieh/Pictures/app.py', recursive=True, remote_path='/home/ubuntu/sdk' + str(i + 1))
+                    #scp.put('/home/davidhsieh/Pictures/device.ini', recursive=True, remote_path='/home/ubuntu/sdk' + str(i + 1))
+                    scp.put('/home/davidhsieh/Pictures/aci_uart.py', recursive=True, remote_path='/home/ubuntu/sdk' + str(i + 1) + '/pyaci/aci/')
 
                     print("scp ", ip, ' done!')
                     scp.close()
